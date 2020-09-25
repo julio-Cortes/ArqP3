@@ -1,11 +1,6 @@
-MOV A,A
-MOV (A),B
-MOV B,(A)
-MOV B,B
-MOV (0),0
-MOV B,(0)
-MOV (0),A
-MOV (0),B
-MOV A,(B)
-MOV B,(B)
-MOV (B),A
+ADD 0,A
+ADD A,(B)
+SUB (B),A
+AND B,B
+OR (0),0
+XOR B,(0)
