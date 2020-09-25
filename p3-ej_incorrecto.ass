@@ -1,6 +1,6 @@
 CMP 1,0
 JEQ #0E
-MOV (0),A
+MOV (256),A
 MOV (1),B
 MOV A,B
 MIV B,A
