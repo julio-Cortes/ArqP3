@@ -14,7 +14,6 @@ CMP
 Funciones auxiliares
 """
 
-
 def safe_int_cast(val):
     try:
         val = int(val)
@@ -24,6 +23,7 @@ def safe_int_cast(val):
 
 
 def hex_to_dec(string):
+    string = string.replace("#", "")
     return int(string, 16)
 
 
@@ -35,7 +35,6 @@ def p_checker(string):
         aux = string.replace("(", "")
         aux = aux.replace(")", "")
         if "#" in string:
-            aux = aux.replace("#", "")
             aux = str(hex_to_dec(aux))
         checker = safe_int_cast(aux)
         if checker:
@@ -53,7 +52,6 @@ def unique_checker(insert, largo):  # INC, RST , JMP
     if "A" in insert[1]:  # Revisor A no puede existir en instrucciones unicas
         return 2
     if "#" in insert[1]:
-        insert[1] = insert[1].replace("#", "")
         insert[1] = str(hex_to_dec(insert[1]))
     if int(insert[1]) > largo and "J" in insert[0]:  # A futuro va a ser el label no existente
         return 3
@@ -84,13 +82,12 @@ def add_sub_and_or_xor_checker(insert):
 
 
 def not_shl_shr(insert):
+    if insert[1] == "(B)":
+        return 0
     if (insert[1][0] == "A" or insert[1][0] == "B") and (insert[1][1] == "A" or insert[1][1] == "B"):
         return 0
     if p_checker(insert[1][0]) and (insert[1][1] == "A" or insert[1][1] == "B"):
         return 0
-    if insert[1][0] == "(B)":
-        return 0
-
     return 2
 
 
@@ -101,6 +98,7 @@ def cmp(insert):
         return 0
     if insert[1][0] == "B" and (insert[1][1] == "(B)" or insert[1][1] == "A"):
         return 2
+    return 2
 
 
 def lit(insert):
@@ -124,15 +122,14 @@ def lit(insert):
             return 1  # Instruccion fuera de rango
     elif insert[1][0] == "A" or insert[1][0] == "B":
         return 0
+    return 2
 
 
 def revisar_instruccion(insert, largo):
     if insert[0] in operaciones:
-
         if type(insert[1]) == list:
             if insert[1][0] != "A" and insert[1][0] != "B" and not p_checker(insert[1][0]):
                 return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"  # => Literal en la izquierda
-
         if "J" in insert[0] or insert[0] == "INC" or insert[0] == "RST":
             #  primera revision
             checker = unique_checker(insert, largo)
@@ -147,7 +144,6 @@ def revisar_instruccion(insert, largo):
             checker = lit(insert)
             if checker == 1:
                 return "se usa literal fuera de rango permitido"
-
             #  segunda revision
             if insert[0] == "MOV":
                 checker = mov_checker(insert)
@@ -170,7 +166,6 @@ def revisar_instruccion(insert, largo):
                 checker = cmp(insert)
                 if checker == 2:
                     return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
-
         return True
     return f"la instruccion no existe {insert[0]}"
 
@@ -180,16 +175,41 @@ def leer_archivo(nombre):
     inst = []
     for linea in file:
         linea = linea.split()
+        if "," in linea[1]:
+            linea[1] = linea[1].split(",")
+            if "(" in linea[1][0]:
+                linea[1][0] = linea[1][0].replace("(", "")
+                linea[1][0] = linea[1][0].replace(")", "")
+            if "(" in linea[1][1]:
+                linea[1][1] = linea[1][1].replace("(", "")
+                linea[1][1] = linea[1][1].replace(")", "")
+                if "#" in linea[1][0]:
+                    linea[1][0] = hex_to_dec(linea[1][0])
+                if "#" in linea[1][1]:
+                    linea[1][1] = hex_to_dec(linea[1][1])
+                linea[1][0] = "(" + str(linea[1][0]) + ")"
+                linea[1][1] = "(" + str(linea[1][1]) + ")"
+            if "#" in linea[1][0]:
+                linea[1][0] = hex_to_dec(linea[1][0])
+            if "#" in linea[1][1]:
+                linea[1][1] = hex_to_dec(linea[1][1])
+        else:
+            if "(" in linea[1]:
+                linea[1] = linea[1].replace("(","")
+                linea[1] = linea[1].replace(")", "")
+                if "#" in linea[1]:
+                    linea[1] = hex_to_dec(linea[1])
+                linea[1] = "(" + str(linea[1]) + ")"
+            if "#" in linea[1]:
+                linea[1] = hex_to_dec(linea[1])
         inst.append(linea)
-    for op in inst:
-        if "," in op[1]:
-            op[1] = op[1].split(",")
+
     return inst
 
 
 # Main
 
-archivo = "p3-ej_correcto.ass"
+archivo = "input.txt"
 instrucciones = leer_archivo(archivo)
 cont = 1
 verificador = True

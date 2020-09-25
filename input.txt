@@ -1,6 +1,8 @@
-ADD 0,A
-ADD A,(B)
-SUB (B),A
-AND B,B
-OR (0),0
-XOR B,(0)
+CMP A,A
+CMP (B),1
+CMP 1,A
+CMP (1),B
+CMP B,A
+SHL (#1)
+SHR A,(B)
+SHR A,1

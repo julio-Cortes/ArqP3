@@ -1,0 +1,17 @@
+DATA:
+    inicio #A0
+    fin    #A8
+CODE:
+siguiente:
+    MOV B,(inicio)
+    AND B,1
+    CMP B,0
+    JNE direccionamiento
+    ADD A,1
+direccionamiento:
+    INC (inicio)
+    MOV B,(final)
+    CMP B,(inicio)
+    JGE siguiente
+	
+	
