@@ -42,6 +42,7 @@ def cleaner(linea):
         linea = par_adder(linea)
     if "#" in linea:
         linea = hex_to_dec(linea)
+        linea = str(linea)
 
     return linea
 
@@ -83,52 +84,67 @@ def unique_checker(insert, largo):  # INC, RST , JMP
 def mov_checker(insert):
     if insert[1][1] == insert[1][0]:
         return 2  # => Instruccion no valida
+
     if p_checker(insert[1][0]) and not (insert[1][1] == "A" or insert[1][1] == "B"):
         return 2  # => Instruccion no valida
+
+    if "(B)" == insert[1][0] and not insert[1][1]=="A":
+        return 2 #=> si es B, solo puede haber A a la derecha
+
     return 0
 
 
 def add_sub_and_or_xor_checker(insert):
-    if insert[1][1] == insert[1][0]:
-        return 2  # => Instruccion no valida
-    if insert[1][0] == "B" and insert[1][1] == "(B)":
-        return 2  # => Instruccion no valida
     if type(insert[1]) == list:
+        if insert[1][1] == insert[1][0]:
+            return 2  # => Instruccion no valida
+        if insert[1][0] == "B" and insert[1][1] == "(B)":
+            return 2  # => Instruccion no valida
         if p_checker(insert[1][0]):
             return 2
-    if insert[1][0] == "(B)":
-        return 2
+        if insert[1][0] == "(B)":
+            return 2
+    else:
+        if not p_checker(insert[1]) or insert[1] == "(B)":
+            return 2
     return 0
 
 
 def not_shl_shr(insert):
     if insert[1] == "(B)":
         return 0
-    if (insert[1][0] == "A" or insert[1][0] == "B") and (insert[1][1] == "A" or insert[1][1] == "B"):
-        return 0
-    if p_checker(insert[1][0]) and (insert[1][1] == "A" or insert[1][1] == "B"):
-        return 0
+    if type(insert[1]) == list:
+        if (insert[1][0] == "A" or insert[1][0] == "B") and (insert[1][1] == "A" or insert[1][1] == "B"):
+            return 0
+        if p_checker(insert[1][0]) and (insert[1][1] == "A" or insert[1][1] == "B"):
+            return 0
     return 2
 
 
 def cmp(insert):
     if insert[1][0] == insert[1][1]:
         return 2
+
     if insert[1][0] == "A":
         return 0
-    if insert[1][0] == "B" and (insert[1][1] == "(B)" or insert[1][1] == "A"):
-        return 2
+
+    if insert[1][0] == "B" and p_checker(insert[1][1]) and insert[1][1] != "(B)" and insert[1][1] != "A":
+        return 0
+
     return 2
 
 
 def lit(insert):
+
     if insert[1][1] != "A" and insert[1][1] != "B" and p_checker(insert[1][1]):
         if insert[1][1] == "(B)":
             return 0
+
         string = insert[1][1].replace("(", "")
         string = string.replace(")", "")
         if int(string) > 255:
             return 1  # Instruccion fuera de rango
+
     elif insert[1][1] != "A" and insert[1][1] != "B" and not p_checker(insert[1][1]):
         if int(insert[1][1]) > 255:
             return 1  # Instruccion fuera de rango
@@ -136,18 +152,20 @@ def lit(insert):
     if insert[1][0] != "A" and insert[1][0] != "B" and p_checker(insert[1][0]):
         if insert[1][0] == "(B)":
             return 0
+
         string = insert[1][0].replace("(", "")
         string = string.replace(")", "")
         if int(string) > 255:
             return 1  # Instruccion fuera de rango
+
     elif insert[1][0] == "A" or insert[1][0] == "B":
         return 0
+
     return 2
 
 
 def revisar_instruccion(insert, largo):
     if insert[0] in operaciones:
-
         if type(insert[1]) == list:
             if "(A)" in insert[1][0] or "(A)" in insert[1][1]:
                 return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
@@ -160,19 +178,18 @@ def revisar_instruccion(insert, largo):
             checker = unique_checker(insert, largo)
             if checker == 1:
                 return "instruccion fuera de rango permitido"  # Lit>255
+
             elif checker == 2 or "(A)" in insert[1]:
                 return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"  # No puede haber A en instrucciones unicas
+
             elif checker == 3:
                 return "JMP a instruccion inexistente"  # Cambiar por label a futuro
+
         else:
 
             if "(A)" in insert[1]:
                 return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
 
-            # Revision de rango
-            checker = lit(insert)
-            if checker == 1:
-                return "se usa literal fuera de rango permitido"
             #  segunda revision
             if insert[0] == "MOV":
                 checker = mov_checker(insert)
@@ -185,17 +202,26 @@ def revisar_instruccion(insert, largo):
                 checker = add_sub_and_or_xor_checker(insert)
                 if checker == 2:
                     return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
+
             # cuarta revision
             elif insert[0] == "NOT" or insert[0] == "SHL" or insert[0] == "SHR":
                 checker = not_shl_shr(insert)
                 if checker == 2:
                     return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
+
             # quinta revision
             else:
                 checker = cmp(insert)
                 if checker == 2:
                     return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
+
+            # Revision de rango
+            checker = lit(insert)
+            if checker == 1:
+                return "se usa literal fuera de rango permitido"
+
         return True
+
     return f"la instruccion no existe {insert[0]}"
 
 
@@ -211,7 +237,6 @@ def leer_archivo(nombre):
         else:
             linea[1] = cleaner(linea[1])
         inst.append(linea)
-
     return inst
 
 
