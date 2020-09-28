@@ -26,6 +26,26 @@ def hex_to_dec(string):
     string = string.replace("#", "")
     return int(string, 16)
 
+def par_removal(string):
+    string = string.replace("(", "")
+    string = string.replace(")", "")
+    return string
+
+def par_adder(string):
+    return "("+str(string)+")"
+
+def cleaner(linea):
+    if "(" in linea:
+        linea = par_removal(linea)
+        if "#" in linea:
+            linea = hex_to_dec(linea)
+        linea = par_adder(linea)
+    if "#" in linea:
+        linea = hex_to_dec(linea)
+
+    return linea
+
+
 
 def p_checker(string):
     if string == "(B)":
@@ -127,9 +147,14 @@ def lit(insert):
 
 def revisar_instruccion(insert, largo):
     if insert[0] in operaciones:
+
         if type(insert[1]) == list:
+            if "(A)" in insert[1][0] or "(A)" in insert[1][1]:
+                return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
+
             if insert[1][0] != "A" and insert[1][0] != "B" and not p_checker(insert[1][0]):
                 return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"  # => Literal en la izquierda
+
         if "J" in insert[0] or insert[0] == "INC" or insert[0] == "RST":
             #  primera revision
             checker = unique_checker(insert, largo)
@@ -140,6 +165,10 @@ def revisar_instruccion(insert, largo):
             elif checker == 3:
                 return "JMP a instruccion inexistente"  # Cambiar por label a futuro
         else:
+
+            if "(A)" in insert[1]:
+                return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
+
             # Revision de rango
             checker = lit(insert)
             if checker == 1:
@@ -177,31 +206,10 @@ def leer_archivo(nombre):
         linea = linea.split()
         if "," in linea[1]:
             linea[1] = linea[1].split(",")
-            if "(" in linea[1][0]:
-                linea[1][0] = linea[1][0].replace("(", "")
-                linea[1][0] = linea[1][0].replace(")", "")
-            if "(" in linea[1][1]:
-                linea[1][1] = linea[1][1].replace("(", "")
-                linea[1][1] = linea[1][1].replace(")", "")
-                if "#" in linea[1][0]:
-                    linea[1][0] = hex_to_dec(linea[1][0])
-                if "#" in linea[1][1]:
-                    linea[1][1] = hex_to_dec(linea[1][1])
-                linea[1][0] = "(" + str(linea[1][0]) + ")"
-                linea[1][1] = "(" + str(linea[1][1]) + ")"
-            if "#" in linea[1][0]:
-                linea[1][0] = hex_to_dec(linea[1][0])
-            if "#" in linea[1][1]:
-                linea[1][1] = hex_to_dec(linea[1][1])
+            linea[1][0] = cleaner(linea[1][0])
+            linea[1][1] = cleaner(linea[1][1])
         else:
-            if "(" in linea[1]:
-                linea[1] = linea[1].replace("(","")
-                linea[1] = linea[1].replace(")", "")
-                if "#" in linea[1]:
-                    linea[1] = hex_to_dec(linea[1])
-                linea[1] = "(" + str(linea[1]) + ")"
-            if "#" in linea[1]:
-                linea[1] = hex_to_dec(linea[1])
+            linea[1] = cleaner(linea[1])
         inst.append(linea)
 
     return inst

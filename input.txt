@@ -1,4 +1,4 @@
-CMP A,A
+CMP A,(A)
 CMP (B),1
 CMP 1,A
 CMP (1),B
