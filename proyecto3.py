@@ -82,16 +82,17 @@ def unique_checker(insert, largo):  # INC, RST , JMP
 
 
 def mov_checker(insert):
-    if insert[1][1] == insert[1][0]:
-        return 2  # => Instruccion no valida
-
-    if p_checker(insert[1][0]) and not (insert[1][1] == "A" or insert[1][1] == "B"):
-        return 2  # => Instruccion no valida
-
-    if "(B)" == insert[1][0] and not insert[1][1]=="A":
-        return 2 #=> si es B, solo puede haber A a la derecha
-
-    return 0
+    if type(insert[1]) == list:
+        if insert[1][1] == insert[1][0]:
+            return 2  # => Instruccion no valida
+    
+        if p_checker(insert[1][0]) and not (insert[1][1] == "A" or insert[1][1] == "B"):
+            return 2  # => Instruccion no valida
+    
+        if "(B)" == insert[1][0] and not insert[1][1]=="A":
+            return 2 #=> si es B, solo puede haber A a la derecha
+        return 0
+    return 2
 
 
 def add_sub_and_or_xor_checker(insert):
@@ -122,20 +123,17 @@ def not_shl_shr(insert):
 
 
 def cmp(insert):
-    if insert[1][0] == insert[1][1]:
-        return 2
-
-    if insert[1][0] == "A":
-        return 0
-
-    if insert[1][0] == "B" and p_checker(insert[1][1]) and insert[1][1] != "(B)" and insert[1][1] != "A":
-        return 0
-
+    if type(insert[1]) == list:
+        if insert[1][0] == insert[1][1]:
+            return 2
+        if insert[1][0] == "A":
+            return 0
+        if insert[1][0] == "B" and ((p_checker(insert[1][1]) or insert[1][1] != "A") and insert[1][1] != "(B)"):
+            return 0
     return 2
 
 
 def lit(insert):
-
     if insert[1][1] != "A" and insert[1][1] != "B" and p_checker(insert[1][1]):
         if insert[1][1] == "(B)":
             return 0
@@ -242,7 +240,7 @@ def leer_archivo(nombre):
 
 # Main
 
-archivo = "input.txt"
+archivo = "verificar_add.txt"
 instrucciones = leer_archivo(archivo)
 cont = 1
 verificador = True
