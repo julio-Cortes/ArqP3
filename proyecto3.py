@@ -1,4 +1,6 @@
 # Declaracion de variables
+# En la linea 240 aproximadamente hay un "main" donde esta el archivo que leera el programa
+
 operaciones = ["MOV", "ADD", "SUB", "AND", "OR", "NOT", "XOR", "SHL", "SHR", "INC", "RST", "CMP", "JMP", "JEQ", "JNE",
                "JGT", "JLT", "JGE", "JLE", "JCR", "JOV"]
 
@@ -70,14 +72,27 @@ Funciones reales
 
 
 def unique_checker(insert, largo):  # INC, RST , JMP
-    if "A" in insert[1]:  # Revisor A no puede existir en instrucciones unicas
+    verificador = False
+
+    if type(insert[1])!=list:
+        if "A" in insert[1] or (insert[1]=="(B)" and "J" in insert[0]):  # Revisor A no puede existir en instrucciones unicas
+            return 2
+        if "#" in insert[1]:
+            insert[1] = str(hex_to_dec(insert[1]))
+        if insert[1]!="(B)":
+            if "(" in insert[1]:
+                insert[1]=par_removal(insert[1])
+                verificador = True
+            if int(insert[1]) > largo and "J" in insert[0]:  # A futuro va a ser el label no existente
+                if verificador:
+                    insert[1]=par_adder(insert[1])
+                return 3
+            if int(insert[1]) > 255 and insert[1]!="B":  # Revisor Jump < largo de instrucciones o Lit<255
+                if verificador:
+                    insert[1]=par_adder(insert[1])
+                return 1
+    elif type(insert)==list:
         return 2
-    if "#" in insert[1]:
-        insert[1] = str(hex_to_dec(insert[1]))
-    if int(insert[1]) > largo and "J" in insert[0]:  # A futuro va a ser el label no existente
-        return 3
-    if int(insert[1]) > 255:  # Revisor Jump < largo de instrucciones o Lit<255
-        return 1
     return 0
 
 
@@ -85,10 +100,10 @@ def mov_checker(insert):
     if type(insert[1]) == list:
         if insert[1][1] == insert[1][0]:
             return 2  # => Instruccion no valida
-    
+
         if p_checker(insert[1][0]) and not (insert[1][1] == "A" or insert[1][1] == "B"):
             return 2  # => Instruccion no valida
-    
+
         if "(B)" == insert[1][0] and not insert[1][1]=="A":
             return 2 #=> si es B, solo puede haber A a la derecha
         return 0
@@ -240,7 +255,7 @@ def leer_archivo(nombre):
 
 # Main
 
-archivo = "verificar_add.txt"
+archivo = "p3_1-correccion2.ass"
 instrucciones = leer_archivo(archivo)
 cont = 1
 verificador = True
