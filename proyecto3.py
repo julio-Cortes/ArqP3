@@ -79,6 +79,7 @@ def unique_checker(insert, largo):  # INC, RST , JMP
             return 2
         if "#" in insert[1]:
             insert[1] = str(hex_to_dec(insert[1]))
+
         if insert[1]!="(B)":
             if "(" in insert[1]:
                 insert[1]=par_removal(insert[1])
@@ -91,8 +92,10 @@ def unique_checker(insert, largo):  # INC, RST , JMP
                 if verificador:
                     insert[1]=par_adder(insert[1])
                 return 1
+
     elif type(insert)==list:
         return 2
+
     return 0
 
 
