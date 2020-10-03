@@ -1,4 +1,3 @@
-RST (#F2)
 CMP A,0
 JEQ #0E
 MOV (0),A
@@ -16,7 +15,7 @@ MOV A,B
 CMP B,(#01)
 JLE 11
 SHL (#F0),B
-INC (#F0)
+INC (B)
 MOV B,A
 XOR A,121
 RST (#F2)
