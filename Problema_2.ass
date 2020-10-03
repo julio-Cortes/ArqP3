@@ -1,0 +1,28 @@
+DATA:
+	inicio
+	largo
+	res	
+CODE:
+
+palindrome: 
+	MOV A,1
+	MOV (res),A
+
+siguiente:
+	MOV A,(largo)
+	CMP A,(inicio)
+	JNE break
+	MOV B,incio
+	CMP B,largo
+	JGT termino 
+	INC (inicio)
+	SUB A,1
+	MOV (largo),A
+	JMP siguiente
+
+break:
+	MOV A,0
+	MOV (res),A
+
+termino:
+

@@ -14,4 +14,6 @@ direccionamiento:
     CMP B,(inicio)
     JGE siguiente
 	
+
+
 	

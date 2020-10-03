@@ -19,9 +19,9 @@ Funciones auxiliares
 def safe_int_cast(val):
     try:
         val = int(val)
-        return True
     except (ValueError, TypeError):
         return False
+    return True
 
 
 def hex_to_dec(string):
@@ -54,14 +54,14 @@ def p_checker(string):
     if string == "(B)":
         return True
     if string[0] == "(" and string[-1] == ")":
-        aux = string
-        aux = string.replace("(", "")
-        aux = aux.replace(")", "")
+        string = par_removal(string)
+        print (string)
         if "#" in string:
-            aux = str(hex_to_dec(aux))
-        checker = safe_int_cast(aux)
+            string = str(hex_to_dec(string))
+        checker = safe_int_cast(string)
         if checker:
-            string = "(" + aux + ")"
+            string = par_adder(string)
+            print (string)
             return True
     return False
 
@@ -85,13 +85,19 @@ def unique_checker(insert, largo):  # INC, RST , JMP
                 insert[1]=par_removal(insert[1])
                 verificador = True
             if int(insert[1]) > largo and "J" in insert[0]:  # A futuro va a ser el label no existente
+
                 if verificador:
                     insert[1]=par_adder(insert[1])
                 return 3
             if int(insert[1]) > 255 and insert[1]!="B":  # Revisor Jump < largo de instrucciones o Lit<255
+
                 if verificador:
                     insert[1]=par_adder(insert[1])
                 return 1
+
+            if verificador:
+                insert[1]=par_adder(insert[1])
+            return 0
 
     elif type(insert)==list:
         return 2
@@ -158,6 +164,7 @@ def lit(insert):
 
         string = insert[1][1].replace("(", "")
         string = string.replace(")", "")
+
         if int(string) > 255:
             return 1  # Instruccion fuera de rango
 
@@ -202,7 +209,6 @@ def revisar_instruccion(insert, largo):
                 return "JMP a instruccion inexistente"  # Cambiar por label a futuro
 
         else:
-
             if "(A)" in insert[1]:
                 return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
 
@@ -222,6 +228,7 @@ def revisar_instruccion(insert, largo):
             # cuarta revision
             elif insert[0] == "NOT" or insert[0] == "SHL" or insert[0] == "SHR":
                 checker = not_shl_shr(insert)
+
                 if checker == 2:
                     return f"para la instruccion {insert[0]} no existe el uso con {insert[1]}"
 
@@ -255,18 +262,95 @@ def leer_archivo(nombre):
         inst.append(linea)
     return inst
 
+def revisor(archivo):
+    instrucciones = leer_archivo(archivo)
+    cont = 1
+    verificador = True
+    for ins in instrucciones:
+        tmp = revisar_instruccion(ins, len(instrucciones))
+        if tmp != True:
+            print(f"Error en la linea {cont} {tmp}")
+            verificador = False
+        cont += 1
+    if verificador:
+        print (f"Lineas de codigo del archivo original: {cont-1}")
+    return instrucciones,verificador
+
+"""
+OP CODES PROCESSING
+"""
+def opcodes(operaciones):
+    dic = {}
+    cont = 0
+    aux = ""
+    stringaux = ""
+    check = True
+    archivo = open("test.txt")
+    for linea in archivo:
+        if linea=="\n":
+            check = True
+            continue
+
+        linea = linea.replace("\n","")
+
+        if linea in operaciones and check:
+            aux = linea
+            check = False
+            continue
+
+        cont+=1
+        if cont==1:
+            stringaux=aux+" "+linea
+
+        if cont==2:
+            dic[stringaux]=linea
+            stringaux=""
+            cont = 0
+    return dic
+
+def num_or_dir(ins,jumper):
+
+    if ins!="A" and ins!="B" and ins!="(B)":
+
+        if jumper:
+                aux = int(ins)
+                ins = "Dir"
+                return aux,ins
+        else:
+            if "(" in ins:
+                aux = par_removal(ins)
+                aux = int(aux)
+                ins = "(Dir)"
+                return aux,ins
+            else:
+                aux = int(ins)
+                ins = "Lit"
+                return aux,ins
+    return 0,ins
+
 
 # Main
 
-archivo = "p3_1-correccion2.ass"
-instrucciones = leer_archivo(archivo)
-cont = 1
-verificador = True
-for ins in instrucciones:
-    tmp = revisar_instruccion(ins, len(instrucciones))
-    if tmp != True:
-        print(f"Error en la linea {cont} {tmp}")
-        verificador = False
-    cont += 1
+archivo = "p3_1-correccion1.ass"
+instrucciones,verificador = revisor(archivo)
 if verificador:
-    print (f"Lineas de codigo del archivo original: {cont-1}")
+    dic = opcodes(operaciones)
+    out = open("file.out","w")
+    for ins in instrucciones:
+        if type(ins[1])==list:
+            num,ins[1][0] = num_or_dir(ins[1][0],False)
+            if num==0:
+                num,ins[1][1]= num_or_dir(ins[1][1],False)
+            string = ins[0]+" "+ins[1][0]+","+ins[1][1]
+        else:
+            if "J" in ins[0]:
+                num,ins[1] = num_or_dir(ins[1],True)
+            else:
+                num,ins[1] = num_or_dir(ins[1],False)
+            string = ins[0]+" "+ins[1]
+        print (string)
+        out.write(dic[string]+format(num,"08b")+"\n")
+
+
+
+out.close()
