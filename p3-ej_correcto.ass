@@ -1,5 +1,5 @@
 CMP A,0
-JEQ #0E
+JEQ #0D
 MOV (0),A
 MOV (1),B
 MOV A,B
@@ -11,4 +11,4 @@ MOV (0),A
 MOV A,B
 ADD A,(1)
 JMP #05
-MOV A,B
+AND (1)

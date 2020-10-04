@@ -1,28 +1,47 @@
 DATA:
-	inicio
-	largo
-	res	
+	inicio 
+	largo 
+	res 1
 CODE:
-
-palindrome: 
+setup:
 	MOV A,1
 	MOV (res),A
-
-siguiente:
-	MOV A,(largo)
-	CMP A,(inicio)
-	JNE break
-	MOV B,incio
-	CMP B,largo
-	JGT termino 
-	INC (inicio)
-	SUB A,1
-	MOV (largo),A
-	JMP siguiente
-
+	MOV B,(inicio)
+	ADD B,(largo)
+loop:
+	SUB B,1
+	MOV (largo),B
+	CMP B,(inicio)
+	JLT termino
+	MOV B,(inicio)
+	MOV A,(B)
+	MOV B,(largo)
+	CMP A,(B)
+	JNE break 
+	INC (incio)
+	JMP loop
 break:
 	MOV A,0
 	MOV (res),A
-
 termino:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

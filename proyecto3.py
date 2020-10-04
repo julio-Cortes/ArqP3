@@ -197,7 +197,7 @@ def num_or_dir(ins,jumper):
 
 # Main
 
-string = "ej_max_distancia.ass"
+string = "p3-ej_correcto.ass"
 dic = opcodes(operaciones)
 instrucciones,verificador,opc= revisor(string,dic)
 
