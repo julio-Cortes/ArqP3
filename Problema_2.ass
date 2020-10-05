@@ -1,11 +1,9 @@
 DATA:
 	inicio 
-	largo 
+	largo
 	res 1
 CODE:
 setup:
-	MOV A,1
-	MOV (res),A
 	MOV B,(inicio)
 	ADD B,(largo)
 loop:
@@ -21,8 +19,7 @@ loop:
 	INC (incio)
 	JMP loop
 break:
-	MOV A,0
-	MOV (res),A
+	RST (res)
 termino:
 
 

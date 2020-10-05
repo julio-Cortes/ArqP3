@@ -9,7 +9,7 @@ siguiente:
     MOV A,(B)
     AND A,1
     MOV B,(contador)
-    ADD (contador) 
+    ADD (contador)
     INC (cantidad)
 direccionamiento:
     INC (inicio)
@@ -17,5 +17,5 @@ direccionamiento:
     CMP B,(inicio)
     JGE siguiente
 calculo:
-    MOV A,(cantidad)
-    SUB A,(contador)
+    MOV A,(contador)
+    SUB A,(cantidad)
