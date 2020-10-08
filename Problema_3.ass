@@ -1,0 +1,53 @@
+DATA:
+	inicio
+	filas
+	cols
+	grises
+	iterador_area 0
+	iterador_final
+	final 0
+CODE:
+calculo_area:
+	MOV B,(final)
+	MOV A,(cols)
+	ADD(final)
+	MOV A,(iterador_area)
+	CMP A,(filas)
+	JLT calculo_area
+calculo_final:
+	MOV A,(final)
+	MOV B,(final)
+	ADD(final)
+	ADD(final)
+dirreccion_memoria_final:
+	MOV B,(inicio)
+	ADD B,(final)
+	SUB B,1
+	MOV (final),B
+
+comparaciones:
+	MOV B,(inicio)
+	MOV A,(B)
+	INC (inicio)
+	MOV B,(inicio)
+	CMP A,(B)
+	JNE inc_2
+	INC (inicio)
+	MOV B,(inicio)
+	CMP A,(B)
+	JNE inc_3
+	INC (grises)
+	INC (inicio)
+	JMP siguiente
+
+inc_2:
+	INC (inicio)
+
+inc_3:
+	INC (inicio)
+
+siguiente:
+    MOV B,(final)
+    CMP B,(inicio)
+    JGT comparaciones
+

@@ -1,8 +1,0 @@
-CMP (A),(A)
-CMP (B),1
-CMP 1,A
-CMP (1),B
-CMP B,A
-SHL (#1)
-SHR A,(B)
-SHR A,1

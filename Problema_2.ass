@@ -21,24 +21,3 @@ loop:
 break:
 	RST (res)
 termino:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@ CMP A,0
 JEQ #0E
 MOV (0),A
 MOV (1),B
-MOV A,B
+MOV A,3
 MOV B,A
 MOV A,(0)
 SUB A,1
