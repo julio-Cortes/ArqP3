@@ -1,0 +1,68 @@
+DATA:
+	inicio
+	largo
+	final 0
+	contador 0
+	copy_inicio
+	aux 0
+	iterador 0
+CODE:
+	MOV B,(inicio)
+	MOV (copy_inicio),B
+	ADD B,(largo)
+	SUB B,1
+	MOV (final),B
+radixsort:
+	INC (contador)
+	MOV B,(copy_inicio)
+	MOV (iterador),B
+	CALL insertion
+	MOV A,(contador)
+	CMP A,8
+	JNE radixsort
+	JMP fin
+insertion:
+	CMP B,(copy_inicio)
+	JEQ update
+	MOV A,(B)
+	AND A,1
+	PUSH A
+	SUB B,1
+	MOV A,(B)
+	AND A,1
+	MOV (aux),A
+	POP A 
+	CMP A,(aux)
+	JLT swap
+	MOV A,(iterador)
+	CMP A,(final)
+	JEQ la_shift
+	JMP update
+swap:
+	MOV (B),A
+	SUB B,1
+	MOV A,(aux)
+	MOV (B),A
+	CMP B,(copy_inicio)
+	#AQUI HAY QUE VOLVER AL ITERADOR DONDE ESTAMOS
+	JEQ update
+	SUB B,1
+	MOV (inicio),B
+	JMP insertion
+update:
+	INC (iterador)
+	MOV B,(iterador)
+	MOV (inicio),B
+	JMP insertion
+la_shift:
+	MOV B,(copy_inicio)
+	MOV (inicio),B
+loop:
+	MOV A,(B)
+	SHR A,A
+	MOV (B),A
+	INC (inicio)
+	CMP B,(final)
+	JNE loop
+	RET
+fin:
