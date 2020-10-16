@@ -44,7 +44,6 @@ swap:
 	MOV A,(aux)
 	MOV (B),A
 	CMP B,(copy_inicio)
-	#AQUI HAY QUE VOLVER AL ITERADOR DONDE ESTAMOS
 	JEQ update
 	SUB B,1
 	MOV (inicio),B
