@@ -1,67 +1,83 @@
 DATA:
-	inicio
-	largo
-	final 0
-	contador 0
-	copy_inicio
-	aux 0
-	iterador 0
+    inicio
+    largo
+    final 0
+    contador 0
+    copy_inicio
+    aux 0
+    iterador 0
+    comparador 0
+    shifter 0
 CODE:
-	MOV B,(inicio)
-	MOV (copy_inicio),B
-	ADD B,(largo)
-	SUB B,1
-	MOV (final),B
+    MOV B,(inicio)
+    MOV (copy_inicio),B
+    ADD B,(largo)
+    SUB B,1
+    MOV (final),B
 radixsort:
-	INC (contador)
-	MOV B,(copy_inicio)
-	MOV (iterador),B
-	CALL insertion
-	MOV A,(contador)
-	CMP A,8
-	JNE radixsort
-	JMP fin
+    INC (contador)
+    MOV B,(copy_inicio)
+    MOV (iterador),B
+    CALL insertion
+    MOV A,(contador)
+    CMP A,9
+    JNE radixsort
+    JMP fin
 insertion:
-	CMP B,(copy_inicio)
-	JEQ update
-	MOV A,(B)
-	AND A,1
-	PUSH A
-	SUB B,1
-	MOV A,(B)
-	AND A,1
-	MOV (aux),A
-	POP A 
-	CMP A,(aux)
-	JLT swap
-	MOV A,(iterador)
-	CMP A,(final)
-	JEQ la_shift
-	JMP update
-swap:
-	MOV (B),A
-	SUB B,1
-	MOV A,(aux)
-	MOV (B),A
-	CMP B,(copy_inicio)
-	JEQ update
-	SUB B,1
-	MOV (inicio),B
-	JMP insertion
+    CMP B,(copy_inicio)
+    JEQ update
+    MOV A,(B)
+    PUSH B
+    CALL la_shift
+    POP B
+    PUSH A
+    SUB B,1
+    MOV A,(B)
+    MOV (aux),A
+    PUSH B
+    CALL la_shift
+    POP B
+    MOV (comparador),A
+    POP A 
+    CMP A,(comparador)
+    JLT swap
+    MOV A,(iterador)
+    CMP A,(final)
+    JEQ next
+    JMP update
+swap: 
+    INC B
+    MOV A,(B)
+    SUB B,1
+    MOV (B),A
+    INC B 
+    MOV A,(aux)
+    MOV (B),A
+    CMP B,(copy_inicio)
+    JEQ update
+    SUB B,1
+    MOV (inicio),B
+    JMP insertion
 update:
-	INC (iterador)
-	MOV B,(iterador)
-	MOV (inicio),B
-	JMP insertion
+    INC (iterador)
+    MOV B,(iterador)
+    MOV (inicio),B
+    JMP insertion
+next:
+    MOV B,(copy_inicio)
+    MOV (inicio),B
+    RET
 la_shift:
-	MOV B,(copy_inicio)
-	MOV (inicio),B
-loop:
-	MOV A,(B)
-	SHR A,A
-	MOV (B),A
-	INC (inicio)
-	CMP B,(final)
-	JNE loop
-	RET
+    MOV B,(contador)
+    SUB B,1
+    CMP B,0
+    JEQ first
+    SHR A,A
+    INC (shifter)
+    CMP B,(shifter)
+    JNE la_shift 
+first:
+    AND A,1
+    RST (shifter)
+    RET
 fin:
