@@ -1,0 +1,28 @@
+DATA:
+  lista ##A0
+  n 5
+  res
+  aux 0
+CODE:
+siguiente:
+  MOV B,(list)
+  MOV A,(B)
+  INC B
+  MOV B,(B)
+  CMP A,B
+  JGE comprar
+  MOV (aux),A
+  MOV A,B
+  MOV B,(aux)
+comparar:
+  SUB A,B
+  CMP A,(res)
+  JLE lista
+  MOV (res),A
+revisar
+  MOV A,(n)
+  SUB A,1
+  MOV (n),A
+  INC (lista)
+  CMP A,1
+  JGT siguiente

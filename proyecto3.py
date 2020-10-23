@@ -17,12 +17,34 @@ CMP
 Funciones auxiliares
 """
 
+def transform_label_var(string, label, var, salto):
+    label_key = label.keys()
+    var_key = var.keys()
+    if string in label_key and salto == 1:
+        return label[string]
+    elif string in var_key and salto == 0:
+        return var[string]
+    dat = 0
+    try:
+        if type(int(string)) == int:
+            dat = 1
+    except:
+        pass
+    if type(string) == str and dat == 0:
+        if salto == 1:
+            return -1
+        elif salto == 0:
+            return -2
+    return string
+
 def hex_to_dec(string):
-    if  "#" in string:
-        string = string.replace("#", "")
-        return int(string, 16)
-    else:
-        return int(string)
+    if type(string) == str:
+        if  "#" in string:
+            string = string.replace("#", "")
+            return int(string, 16)
+        else:
+            return int(string)
+    return string
 
 def par_removal(string):
     if "(" in string:
@@ -39,13 +61,18 @@ def par_adder(string):
 """
 Funciones reales
 """
-def revisar_instruccion(ins,dic,largo):
+def revisar_instruccion(ins,dic,largo,var,labels):
     string  = ins[0]+" "
     if type(ins[1])==list:
 
         if ins[1][0]!="A" and ins[1][0]!="B" and ins[1][0]!="(B)" and ins[1][0]!="(A)":
             if "(" in ins[1][0]:
-                ins[1][0],check=par_removal(ins[1][0])
+                ins[1][0],check = par_removal(ins[1][0])
+                ins[1][0] = transform_label_var(ins[1][0],labels,var,0)
+                if ins[1][0] == -1:
+                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                if ins[1][0] == -2:
+                    return f"Variable no existente en la instruccion {ins}",-1
                 ins[1][0] = hex_to_dec(ins[1][0])
                 if ins[1][0] > 255:
                     return f"Direccion fuera de rango permitido,{ins[1][0]}",-1
@@ -53,6 +80,11 @@ def revisar_instruccion(ins,dic,largo):
                     ins[1][0]=par_adder(ins[1][0])
                 string+="(Dir)"
             else:
+                ins[1][0] = transform_label_var(ins[1][0],labels,var,0)
+                if ins[1][0] == -1:
+                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                if ins[1][0] == -2:
+                    return f"Variable no existente en la instruccion {ins}",-1
                 ins[1][0] = hex_to_dec(ins[1][0])
                 if int(ins[1][0])>255:
                     return f"Literal fuera de rango permitido,{ins[1][0]}",-1
@@ -66,6 +98,11 @@ def revisar_instruccion(ins,dic,largo):
         if ins[1][1]!="A" and ins[1][1]!="B" and ins[1][1]!="(B)" and ins[1][1]!="(A)":
             if "(" in ins[1][1]:
                 ins[1][1],check=par_removal(ins[1][1])
+                ins[1][1] = transform_label_var(ins[1][1],labels,var,0)
+                if ins[1][1] == -1:
+                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                if ins[1][1] == -2:
+                    return f"Variable no existente en la instruccion {ins}",-1
                 ins[1][1] = hex_to_dec(ins[1][1])
                 if ins[1][1] > 255:
                     return f"Direccion fuera de rango permitido,{ins[1][1]}",-1
@@ -73,6 +110,11 @@ def revisar_instruccion(ins,dic,largo):
                     ins[1][1]=par_adder(ins[1][1])
                 string+="(Dir)"
             else:
+                ins[1][1] = transform_label_var(ins[1][1],labels,var,0)
+                if ins[1][1] == -1:
+                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                if ins[1][1] == -2:
+                    return f"Variable no existente en la instruccion {ins}",-1
                 ins[1][1] = hex_to_dec(ins[1][1])
                 if int(ins[1][1])>255:
                     return f"Literal fuera de rango permitido,{ins[1][1]}",-1
@@ -84,6 +126,11 @@ def revisar_instruccion(ins,dic,largo):
         if "J" in ins[0]:
             if ins[1]!="A" and ins[1]!="B" and ins[1]!="(B)" and ins[1]!="(A)":
                 if "(" not in ins[1]:
+                    ins[1] = transform_label_var(ins[1],labels,var,1)
+                    if ins[1] == -1:
+                        return f"Etiqueta no existente en la instruccion {ins}",-1
+                    if ins[1] == -2:
+                        return f"Variable no existente en la instruccion {ins}",-1
                     ins[1] = hex_to_dec(ins[1])
                     if ins[1]>largo-1:
                         return "Salto fuera de rango",-1 #Futuro labels
@@ -95,6 +142,11 @@ def revisar_instruccion(ins,dic,largo):
             if ins[1]!="A" and ins[1]!="B" and ins[1]!="(B)" and ins[1]!="(A)":
                 if "(" in ins[1]:
                     ins[1],check=par_removal(ins[1])
+                    ins[1] = transform_label_var(ins[1],labels,var,0)
+                    if ins[1] == -1:
+                        return f"Etiqueta no existente en la instruccion {ins}",-1
+                    if ins[1] == -2:
+                        return f"Variable no existente en la instruccion {ins}",-1
                     ins[1] = hex_to_dec(ins[1])
                     if ins[1] > 255:
                         return f"Direccion fuera de rango permitido,{ins[1]}",-1
@@ -103,13 +155,17 @@ def revisar_instruccion(ins,dic,largo):
                     string+="(Dir)"
 
                 else:
+                    ins[1] = transform_label_var(ins[1],labels,var,0)
+                    if ins[1] == -1:
+                        return f"Etiqueta no existente en la instruccion {ins}",-1
+                    if ins[1] == -2:
+                        return f"Variable no existente en la instruccion {ins}",-1
                     ins[1] = hex_to_dec(ins[1])
                     if int(ins[1])>255:
                         return f"Literal fuera de rango permitido,{ins[1]}",-1
                     string+="Lit"
             else:
                 string+=ins[1]
-
     if string in dic.keys():
         return True,string
     else:
@@ -117,22 +173,40 @@ def revisar_instruccion(ins,dic,largo):
 
 def leer_archivo(nombre):
     file = open(nombre)
+    var = {}
+    labels = {}
+    cont_linea = 0
     inst = []
+    in_code = 0
     for linea in file:
+        if linea == "DATA:\n":
+            continue
+        if linea == "CODE:\n":
+            in_code = 1
+            continue
         linea = linea.split()
-        if "," in linea[1]:
-            linea[1] = linea[1].split(",")
-
-        inst.append(linea)
-    return inst
+        if in_code == 1:
+            try:
+                if "," in linea[1]:
+                    linea[1] = linea[1].split(",")
+                inst.append(linea)
+                cont_linea+=1
+            except:
+                labels[linea[0].replace(":","")] = cont_linea
+        else:
+            if len(linea) > 1:
+                var[linea[0]] = linea[1]
+            else:
+                var[linea[0]] = 0
+    return inst, var, labels
 
 def revisor(archivo,dic):
     opc=[]
-    instrucciones = leer_archivo(archivo)
+    instrucciones, var, labels = leer_archivo(archivo)
     cont = 1
     verificador = True
     for ins in instrucciones:
-        tmp,string = revisar_instruccion(ins,dic,len(instrucciones))
+        tmp,string = revisar_instruccion(ins,dic,len(instrucciones),var,labels)
         if tmp != True:
             print(f"Error en la linea {cont} {tmp}")
             verificador = False
@@ -142,14 +216,14 @@ def revisor(archivo,dic):
     if verificador:
         print (f"Lineas de codigo del archivo original: {cont-1}")
 
-    return instrucciones,verificador,opc
+    return instrucciones,verificador,opc, var, labels
 
 
 """
 OP CODES PROCESSING
 """
 def opcodes(operaciones):
-    dic = {}
+    dic_ins = {}
     cont = 0
     aux = ""
     stringaux = ""
@@ -172,10 +246,10 @@ def opcodes(operaciones):
             stringaux=aux+" "+linea
 
         if cont==2:
-            dic[stringaux]=linea
+            dic_ins[stringaux]=linea
             stringaux=""
             cont = 0
-    return dic
+    return dic_ins
 
 def num_or_dir(ins,jumper):
 
@@ -197,9 +271,10 @@ def num_or_dir(ins,jumper):
 
 # Main
 
-string = "ej_max_distancia_errores.ass"
+string = "P3F_1v2.ass"
 dic = opcodes(operaciones)
-instrucciones,verificador,opc= revisor(string,dic)
+instrucciones,verificador,opc, var, labels= revisor(string,dic)
+
 
 if verificador:
     out = open(f"{string}.out","w")
@@ -221,7 +296,16 @@ if verificador:
                 num = num_or_dir(instrucciones[ins][1],False)
 
         out.write(dic[opc[ins]]+format(num,"08b")+"\n")
-
-
-
+        
     out.close()
+        
+    out_mem = open(f"{string}.mem","w")
+    
+    var_keys = var.keys()
+    for dat in var_keys:
+        num = hex_to_dec(var[dat])
+        out_mem.write(format(num,"08b")+"\n")
+        
+    out_mem.close()
+        
+
