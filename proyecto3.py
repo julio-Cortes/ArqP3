@@ -206,7 +206,7 @@ def leer_archivo(nombre):
                     if "," in fix_linea[1]:
                         fix_linea[1] = fix_linea[1].split(",")
                     inst.append(fix_linea)
-                    cont_linea+=1
+                cont_linea+=1
             except:
                 labels[linea[0].replace(":","")] = cont_linea
         else:
@@ -288,7 +288,7 @@ def num_or_dir(ins,jumper):
 # Main
 if len(sys.argv) > 0:
     ##string = sys.argv[1]
-    string = "Problema_1.ass"
+    string = "Problema_2.ass"
     dic = opcodes(operaciones)
     instrucciones, verificador, opc, var, labels = revisor(string, dic)
     string = string.replace(".ass", "")
@@ -305,7 +305,6 @@ if len(sys.argv) > 0:
                 num = num_or_dir(instrucciones[ins][1][1], False)
                 if num == 0:
                     num = num_or_dir(instrucciones[ins][1][1], False)
-                pass
             else:
                 if "J" in instrucciones[ins][0]:
                     num = num_or_dir(instrucciones[ins][1], True)

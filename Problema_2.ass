@@ -1,6 +1,6 @@
 DATA:
 	inicio 10
-	largo  14
+	largo  4
 	res 1
 CODE:
 setup:
