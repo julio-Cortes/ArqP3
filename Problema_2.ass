@@ -1,6 +1,6 @@
 DATA:
-	inicio 
-	largo
+	inicio 10
+	largo  14
 	res 1
 CODE:
 setup:
@@ -16,7 +16,7 @@ loop:
 	MOV B,(largo)
 	CMP A,(B)
 	JNE break 
-	INC (incio)
+	INC (inicio)
 	JMP loop
 break:
 	RST (res)

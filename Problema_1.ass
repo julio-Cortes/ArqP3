@@ -1,6 +1,6 @@
 DATA:
-    inicio 
-    fin
+    inicio   10
+    final    15
     contador 0
     cantidad 0
 CODE:
@@ -17,5 +17,5 @@ direccionamiento:
     CMP B,(inicio)
     JGE siguiente
 calculo:
-    MOV A,(contador)
-    SUB A,(cantidad)
+    MOV A,(cantidad)
+    SUB A,(contador)

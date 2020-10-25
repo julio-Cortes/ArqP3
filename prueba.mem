@@ -1,6 +1,8 @@
 DATA:
     n 3
     b 2
+    c 4
+    e 5
 CODE:
     MOV B,(n)
     MOV A,B

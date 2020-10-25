@@ -17,13 +17,16 @@ CMP
 Funciones auxiliares
 """
 
-def transform_label_var(string, label, var, salto):
+def transform_label_var(string, label, var, salto, lit):
     label_key = label.keys()
-    var_key = var.keys()
+    var_key = list(var.keys())
     if string in label_key and salto == 1:
         return label[string]
     elif string in var_key and salto == 0:
-        return var[string]
+        if lit == 1:
+            return var_key.index(string) #CUANDO HAY PARENTESIS
+        else:
+            return var[string]           #CUANDO NO HAY PARENTESIS
     dat = 0
     try:
         if type(int(string)) == int:
@@ -70,7 +73,7 @@ def revisar_instruccion(ins,dic,largo,var,labels):
         if ins[1][0]!="A" and ins[1][0]!="B" and ins[1][0]!="(B)" and ins[1][0]!="(A)":
             if "(" in ins[1][0]:
                 ins[1][0],check = par_removal(ins[1][0])
-                ins[1][0] = transform_label_var(ins[1][0],labels,var,0)
+                ins[1][0] = transform_label_var(ins[1][0],labels,var,0,1)
                 if ins[1][0] == -1:
                     return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][0] == -2:
@@ -82,7 +85,7 @@ def revisar_instruccion(ins,dic,largo,var,labels):
                     ins[1][0]=par_adder(ins[1][0])
                 string+="(Dir)"
             else:
-                ins[1][0] = transform_label_var(ins[1][0],labels,var,0)
+                ins[1][0] = transform_label_var(ins[1][0],labels,var,0,0)
                 if ins[1][0] == -1:
                     return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][0] == -2:
@@ -101,7 +104,7 @@ def revisar_instruccion(ins,dic,largo,var,labels):
             valor_in = ins[1][1]
             if "(" in ins[1][1]:
                 ins[1][1],check=par_removal(ins[1][1])
-                ins[1][1] = transform_label_var(ins[1][1],labels,var,0)
+                ins[1][1] = transform_label_var(ins[1][1],labels,var,0,1)
                 if ins[1][1] == -1:
                     return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][1] == -2:
@@ -113,7 +116,7 @@ def revisar_instruccion(ins,dic,largo,var,labels):
                     ins[1][1]=par_adder(ins[1][1])
                 string+="(Dir)"
             else:
-                ins[1][1] = transform_label_var(ins[1][1],labels,var,0)
+                ins[1][1] = transform_label_var(ins[1][1],labels,var,0,0)
                 if ins[1][1] == -1:
                     return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][1] == -2:
@@ -130,13 +133,13 @@ def revisar_instruccion(ins,dic,largo,var,labels):
         if "J" in ins[0]:
             if ins[1]!="A" and ins[1]!="B" and ins[1]!="(B)" and ins[1]!="(A)":
                 if "(" not in ins[1]:
-                    ins[1] = transform_label_var(ins[1],labels,var,1)
+                    ins[1] = transform_label_var(ins[1],labels,var,1,0)
                     if ins[1] == -1:
                         return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                     if ins[1] == -2:
                         return f"Variable no existente en la instruccion {string}{valor_in}",-1
                     ins[1] = hex_to_dec(ins[1])
-                    if ins[1]>largo-1:
+                    if ins[1]>largo:
                         return "Salto fuera de rango",-1 #Futuro labels
                     string+="Dir"
             else:
@@ -146,7 +149,7 @@ def revisar_instruccion(ins,dic,largo,var,labels):
             if ins[1]!="A" and ins[1]!="B" and ins[1]!="(B)" and ins[1]!="(A)":
                 if "(" in ins[1]:
                     ins[1],check=par_removal(ins[1])
-                    ins[1] = transform_label_var(ins[1],labels,var,0)
+                    ins[1] = transform_label_var(ins[1],labels,var,0,1)
                     if ins[1] == -1:
                         return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                     if ins[1] == -2:
@@ -159,7 +162,7 @@ def revisar_instruccion(ins,dic,largo,var,labels):
                     string+="(Dir)"
 
                 else:
-                    ins[1] = transform_label_var(ins[1],labels,var,0)
+                    ins[1] = transform_label_var(ins[1],labels,var,0,0)
                     if ins[1] == -1:
                         return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                     if ins[1] == -2:
@@ -203,7 +206,7 @@ def leer_archivo(nombre):
                     if "," in fix_linea[1]:
                         fix_linea[1] = fix_linea[1].split(",")
                     inst.append(fix_linea)
-                cont_linea+=1
+                    cont_linea+=1
             except:
                 labels[linea[0].replace(":","")] = cont_linea
         else:
@@ -285,10 +288,11 @@ def num_or_dir(ins,jumper):
 # Main
 if len(sys.argv) > 0:
     ##string = sys.argv[1]
-    string = "prueba.mem"
+    string = "Problema_1.ass"
     dic = opcodes(operaciones)
     instrucciones, verificador, opc, var, labels = revisor(string, dic)
     string = string.replace(".ass", "")
+
 
     if verificador:
         out = open(f"{string}.out", "w")
