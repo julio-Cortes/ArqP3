@@ -1,6 +1,6 @@
 # Declaracion de variables
 # En la linea 240 aproximadamente hay un "main" donde esta el archivo que leera el programa
-
+import sys
 operaciones = ["MOV", "ADD", "SUB", "AND", "OR", "NOT", "XOR", "SHL", "SHR", "INC", "RST", "CMP", "JMP", "JEQ", "JNE",
                "JGT", "JLT", "JGE", "JLE", "JCR", "JOV"]
 
@@ -185,6 +185,7 @@ def leer_archivo(nombre):
             in_code = 1
             continue
         linea = linea.split()
+        print(linea)
         if in_code == 1:
             try:
                 if "," in linea[1]:
@@ -270,42 +271,44 @@ def num_or_dir(ins,jumper):
 
 
 # Main
+if len(sys.argv) > 1:
+    string = sys.argv[1]
+    dic = opcodes(operaciones)
+    instrucciones, verificador, opc, var, labels = revisor(string, dic)
+    string = string.replace(".ass", "")
 
-string = "P3F_1v2.ass"
-dic = opcodes(operaciones)
-instrucciones,verificador,opc, var, labels= revisor(string,dic)
+    if verificador:
+        out = open(f"{string}.out", "w")
 
-
-if verificador:
-    out = open(f"{string}.out","w")
-
-
-    for ins in range(len(instrucciones)):
-        if type(instrucciones[ins][1])==list:
-            num = num_or_dir(instrucciones[ins][1][0],False)
-            if num==0:
-                num = num_or_dir(instrucciones[ins][1][0],False)
-            num = num_or_dir(instrucciones[ins][1][1],False)
-            if num==0:
-                num = num_or_dir(instrucciones[ins][1][1],False)
-            pass
-        else:
-            if "J" in instrucciones[ins][0]:
-                num = num_or_dir(instrucciones[ins][1],True)
+        for ins in range(len(instrucciones)):
+            if type(instrucciones[ins][1]) == list:
+                num = num_or_dir(instrucciones[ins][1][0], False)
+                if num == 0:
+                    num = num_or_dir(instrucciones[ins][1][0], False)
+                num = num_or_dir(instrucciones[ins][1][1], False)
+                if num == 0:
+                    num = num_or_dir(instrucciones[ins][1][1], False)
+                pass
             else:
-                num = num_or_dir(instrucciones[ins][1],False)
+                if "J" in instrucciones[ins][0]:
+                    num = num_or_dir(instrucciones[ins][1], True)
+                else:
+                    num = num_or_dir(instrucciones[ins][1], False)
 
-        out.write(dic[opc[ins]]+format(num,"08b")+"\n")
-        
-    out.close()
-        
-    out_mem = open(f"{string}.mem","w")
-    
-    var_keys = var.keys()
-    for dat in var_keys:
-        num = hex_to_dec(var[dat])
-        out_mem.write(format(num,"08b")+"\n")
-        
-    out_mem.close()
+            out.write(dic[opc[ins]] + format(num, "08b") + "\n")
+
+        out.close()
+
+        out_mem = open(f"{string}.mem", "w")
+
+        var_keys = var.keys()
+        for dat in var_keys:
+            num = hex_to_dec(var[dat])
+            out_mem.write(format(num, "08b") + "\n")
+
+        out_mem.close()
+else:
+    print ("File name missing")
+
         
 

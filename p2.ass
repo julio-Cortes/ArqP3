@@ -1,0 +1,18 @@
+DATA:
+cont 0
+var
+
+CODE:
+  MOV B,(2)
+  MOV A,(B)
+  MOV A,(var)
+loop:
+  MOV (var),A
+  INC(B)
+  ADD A,(B)
+  INC (cont)
+  MOV A,(var)
+  MOV A,(cont)
+  CMP A,5
+  JNE loop
+  MOV (var),A
