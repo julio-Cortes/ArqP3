@@ -14,7 +14,7 @@ siguiente:
   MOV (aux),A
   MOV A,B
   MOV B,(aux)
-comparar:
+comparar: SUM A,B
   SUB A,B
   CMP A,(res)
   JLE lista

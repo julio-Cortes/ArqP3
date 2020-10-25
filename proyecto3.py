@@ -64,15 +64,17 @@ Funciones reales
 def revisar_instruccion(ins,dic,largo,var,labels):
     string  = ins[0]+" "
     if type(ins[1])==list:
+        
+        valor_in = ins[1][0]
 
         if ins[1][0]!="A" and ins[1][0]!="B" and ins[1][0]!="(B)" and ins[1][0]!="(A)":
             if "(" in ins[1][0]:
                 ins[1][0],check = par_removal(ins[1][0])
                 ins[1][0] = transform_label_var(ins[1][0],labels,var,0)
                 if ins[1][0] == -1:
-                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                    return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][0] == -2:
-                    return f"Variable no existente en la instruccion {ins}",-1
+                    return f"Variable no existente en la instruccion {string}{valor_in}",-1
                 ins[1][0] = hex_to_dec(ins[1][0])
                 if ins[1][0] > 255:
                     return f"Direccion fuera de rango permitido,{ins[1][0]}",-1
@@ -82,9 +84,9 @@ def revisar_instruccion(ins,dic,largo,var,labels):
             else:
                 ins[1][0] = transform_label_var(ins[1][0],labels,var,0)
                 if ins[1][0] == -1:
-                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                    return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][0] == -2:
-                    return f"Variable no existente en la instruccion {ins}",-1
+                    return f"Variable no existente en la instruccion {string}{valor_in}",-1
                 ins[1][0] = hex_to_dec(ins[1][0])
                 if int(ins[1][0])>255:
                     return f"Literal fuera de rango permitido,{ins[1][0]}",-1
@@ -96,13 +98,14 @@ def revisar_instruccion(ins,dic,largo,var,labels):
         string+=","
 
         if ins[1][1]!="A" and ins[1][1]!="B" and ins[1][1]!="(B)" and ins[1][1]!="(A)":
+            valor_in = ins[1][1]
             if "(" in ins[1][1]:
                 ins[1][1],check=par_removal(ins[1][1])
                 ins[1][1] = transform_label_var(ins[1][1],labels,var,0)
                 if ins[1][1] == -1:
-                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                    return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][1] == -2:
-                    return f"Variable no existente en la instruccion {ins}",-1
+                    return f"Variable no existente en la instruccion {string}{valor_in}",-1
                 ins[1][1] = hex_to_dec(ins[1][1])
                 if ins[1][1] > 255:
                     return f"Direccion fuera de rango permitido,{ins[1][1]}",-1
@@ -112,9 +115,9 @@ def revisar_instruccion(ins,dic,largo,var,labels):
             else:
                 ins[1][1] = transform_label_var(ins[1][1],labels,var,0)
                 if ins[1][1] == -1:
-                    return f"Etiqueta no existente en la instruccion {ins}",-1
+                    return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                 if ins[1][1] == -2:
-                    return f"Variable no existente en la instruccion {ins}",-1
+                    return f"Variable no existente en la instruccion {string}{valor_in}",-1
                 ins[1][1] = hex_to_dec(ins[1][1])
                 if int(ins[1][1])>255:
                     return f"Literal fuera de rango permitido,{ins[1][1]}",-1
@@ -123,14 +126,15 @@ def revisar_instruccion(ins,dic,largo,var,labels):
             string +=ins[1][1]
 
     else:
+        valor_in = ins[1]
         if "J" in ins[0]:
             if ins[1]!="A" and ins[1]!="B" and ins[1]!="(B)" and ins[1]!="(A)":
                 if "(" not in ins[1]:
                     ins[1] = transform_label_var(ins[1],labels,var,1)
                     if ins[1] == -1:
-                        return f"Etiqueta no existente en la instruccion {ins}",-1
+                        return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                     if ins[1] == -2:
-                        return f"Variable no existente en la instruccion {ins}",-1
+                        return f"Variable no existente en la instruccion {string}{valor_in}",-1
                     ins[1] = hex_to_dec(ins[1])
                     if ins[1]>largo-1:
                         return "Salto fuera de rango",-1 #Futuro labels
@@ -144,9 +148,9 @@ def revisar_instruccion(ins,dic,largo,var,labels):
                     ins[1],check=par_removal(ins[1])
                     ins[1] = transform_label_var(ins[1],labels,var,0)
                     if ins[1] == -1:
-                        return f"Etiqueta no existente en la instruccion {ins}",-1
+                        return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                     if ins[1] == -2:
-                        return f"Variable no existente en la instruccion {ins}",-1
+                        return f"Variable no existente en la instruccion {string}{valor_in}",-1
                     ins[1] = hex_to_dec(ins[1])
                     if ins[1] > 255:
                         return f"Direccion fuera de rango permitido,{ins[1]}",-1
@@ -157,9 +161,9 @@ def revisar_instruccion(ins,dic,largo,var,labels):
                 else:
                     ins[1] = transform_label_var(ins[1],labels,var,0)
                     if ins[1] == -1:
-                        return f"Etiqueta no existente en la instruccion {ins}",-1
+                        return f"Etiqueta no existente en la instruccion {string}{valor_in}",-1
                     if ins[1] == -2:
-                        return f"Variable no existente en la instruccion {ins}",-1
+                        return f"Variable no existente en la instruccion {string}{valor_in}",-1
                     ins[1] = hex_to_dec(ins[1])
                     if int(ins[1])>255:
                         return f"Literal fuera de rango permitido,{ins[1]}",-1
@@ -185,12 +189,20 @@ def leer_archivo(nombre):
             in_code = 1
             continue
         linea = linea.split()
-        print(linea)
         if in_code == 1:
             try:
-                if "," in linea[1]:
-                    linea[1] = linea[1].split(",")
-                inst.append(linea)
+                if len(linea) <= 2:
+                    if "," in linea[1]:
+                        linea[1] = linea[1].split(",")
+                    inst.append(linea)
+                else:
+                    fix_linea = []
+                    labels[linea[0].replace(":","")] = cont_linea
+                    fix_linea.append(linea[1])
+                    fix_linea.append(linea[2])
+                    if "," in fix_linea[1]:
+                        fix_linea[1] = fix_linea[1].split(",")
+                    inst.append(fix_linea)
                 cont_linea+=1
             except:
                 labels[linea[0].replace(":","")] = cont_linea
@@ -271,8 +283,9 @@ def num_or_dir(ins,jumper):
 
 
 # Main
-if len(sys.argv) > 1:
-    string = sys.argv[1]
+if len(sys.argv) > 0:
+    ##string = sys.argv[1]
+    string = "prueba.mem"
     dic = opcodes(operaciones)
     instrucciones, verificador, opc, var, labels = revisor(string, dic)
     string = string.replace(".ass", "")

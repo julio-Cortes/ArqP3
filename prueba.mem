@@ -1,0 +1,10 @@
+DATA:
+    n 3
+    b 2
+CODE:
+    MOV B,(n)
+    MOV A,B
+    MOV A,(b)
+    ADD A,B
+    INC B
+    SUB B,A
