@@ -67,7 +67,7 @@ Funciones reales
 def revisar_instruccion(ins,dic,largo,var,labels):
     string  = ins[0]+" "
     if type(ins[1])==list:
-        
+
         valor_in = ins[1][0]
 
         if ins[1][0]!="A" and ins[1][0]!="B" and ins[1][0]!="(B)" and ins[1][0]!="(A)":
@@ -282,7 +282,7 @@ def num_or_dir(ins,jumper):
             else:
                 aux = int(ins)
                 return aux
-    return 0
+    return -1
 
 
 # Main
@@ -300,16 +300,25 @@ if len(sys.argv) > 0:
         for ins in range(len(instrucciones)):
             if type(instrucciones[ins][1]) == list:
                 num = num_or_dir(instrucciones[ins][1][0], False)
-                if num == 0:
+                if num == -1:
                     num = num_or_dir(instrucciones[ins][1][0], False)
+                if num != -1:
+                    out.write(dic[opc[ins]] + format(num, "08b") + "\n")
+                    continue
                 num = num_or_dir(instrucciones[ins][1][1], False)
-                if num == 0:
+                if num == -1:
                     num = num_or_dir(instrucciones[ins][1][1], False)
+                if num != -1:
+                    out.write(dic[opc[ins]] + format(num, "08b") + "\n")
+                    continue
+
             else:
                 if "J" in instrucciones[ins][0]:
                     num = num_or_dir(instrucciones[ins][1], True)
                 else:
                     num = num_or_dir(instrucciones[ins][1], False)
+            if num == -1:
+                num = 0
 
             out.write(dic[opc[ins]] + format(num, "08b") + "\n")
 
@@ -326,5 +335,5 @@ if len(sys.argv) > 0:
 else:
     print ("File name missing")
 
-        
+
 

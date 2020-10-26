@@ -15,9 +15,10 @@ loop:
 	MOV A,(B)
 	MOV B,(largo)
 	CMP A,(B)
-	JNE break 
+	JNE break
 	INC (inicio)
 	JMP loop
 break:
 	RST (res)
 termino:
+    MOV A,(res)
