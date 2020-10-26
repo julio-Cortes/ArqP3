@@ -21,4 +21,3 @@ loop:
 break:
 	RST (res)
 termino:
-    MOV A,(res)

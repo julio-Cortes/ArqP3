@@ -287,8 +287,7 @@ def num_or_dir(ins,jumper):
 
 # Main
 if len(sys.argv) > 0:
-    ##string = sys.argv[1]
-    string = "Problema_2.ass"
+    string = sys.argv[1]
     dic = opcodes(operaciones)
     instrucciones, verificador, opc, var, labels = revisor(string, dic)
     string = string.replace(".ass", "")
